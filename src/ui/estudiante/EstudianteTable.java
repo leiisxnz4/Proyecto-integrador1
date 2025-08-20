@@ -14,8 +14,19 @@ public class EstudianteTable extends JPanel {
     private EstudianteForm form;
 
     public EstudianteTable() {
+        Color fondoLila = new Color(245, 240, 255);
+        Color bordeLila = new Color(200, 180, 230);
+        Color encabezadoLila = new Color(230, 220, 250);
+
         setLayout(new BorderLayout());
-        setBorder(BorderFactory.createTitledBorder("Estudiantes Registrados"));
+        setBackground(fondoLila);
+        setOpaque(true);
+
+        JLabel titulo = new JLabel("Estudiantes Registrados");
+        titulo.setFont(new Font("SansSerif", Font.BOLD, 24));
+        titulo.setHorizontalAlignment(SwingConstants.CENTER);
+        titulo.setForeground(new Color(80, 60, 120));
+        titulo.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
 
         String[] columnas = {
             "ID", "Nombre", "Edad", "Grupo", "Tutor",
@@ -31,12 +42,26 @@ public class EstudianteTable extends JPanel {
 
         tabla = new JTable(model);
         tabla.setRowHeight(30);
+        tabla.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        tabla.setBackground(Color.WHITE);
+        tabla.setGridColor(bordeLila);
+        tabla.setSelectionBackground(encabezadoLila);
+        tabla.setSelectionForeground(Color.BLACK);
+
         tabla.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
+        tabla.getTableHeader().setBackground(encabezadoLila);
+        tabla.getTableHeader().setForeground(new Color(80, 60, 120));
+        tabla.getTableHeader().setBorder(BorderFactory.createLineBorder(bordeLila));
 
         tabla.getColumn("Acciones").setCellRenderer(new ButtonRenderer());
-        tabla.getColumn("Acciones").setCellEditor(new ButtonEditor(new JCheckBox(), this));
+        tabla.getColumn("Acciones").setCellEditor(new ButtonEditor(tabla, this));
+        tabla.getColumn("Acciones").setPreferredWidth(100);
 
         JScrollPane scroll = new JScrollPane(tabla);
+        scroll.setBorder(BorderFactory.createLineBorder(bordeLila));
+        scroll.getViewport().setBackground(fondoLila);
+
+        add(titulo, BorderLayout.NORTH);
         add(scroll, BorderLayout.CENTER);
 
         cargarDatos();
@@ -44,6 +69,10 @@ public class EstudianteTable extends JPanel {
 
     public void setFormulario(EstudianteForm form) {
         this.form = form;
+    }
+
+    public EstudianteForm getForm() {
+        return form;
     }
 
     public void cargarDatos() {
@@ -54,7 +83,7 @@ public class EstudianteTable extends JPanel {
                 model.addRow(new Object[]{
                     e.getId(), e.getNombre(), e.getEdad(), e.getGrupo(),
                     e.getTutor(), e.getTelefono(), e.getMatricula(), e.getCondicionesMedicas(),
-                    "Editar / Eliminar"
+                    ""
                 });
             }
         } catch (Exception e) {
@@ -88,9 +117,16 @@ public class EstudianteTable extends JPanel {
 
     public void eliminarEstudiante(int fila) {
         int id = (int) model.getValueAt(fila, 0);
-        int confirm = JOptionPane.showConfirmDialog(this,
-            "¿Eliminar el estudiante con ID " + id + "?", "Confirmar eliminación",
-            JOptionPane.YES_NO_OPTION);
+        int confirm = JOptionPane.showOptionDialog(
+            this,
+            "¿Eliminar el estudiante con ID " + id + "?",
+            "Confirmar eliminación",
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            new Object[]{"Eliminar", "Cancelar"},
+            "Cancelar"
+        );
 
         if (confirm == JOptionPane.YES_OPTION) {
             try {
@@ -103,9 +139,5 @@ public class EstudianteTable extends JPanel {
                     "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
-    }
-
-    public EstudianteForm getForm() {
-        return form;
     }
 }

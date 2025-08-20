@@ -18,64 +18,62 @@ public class RecomendacionMedicaForm extends JPanel {
 
     public RecomendacionMedicaForm() {
         setLayout(new GridBagLayout());
-        setBorder(BorderFactory.createTitledBorder("Formulario de Recomendación"));
+        setBackground(new Color(250, 245, 255)); // ✅ Fondo rosita
         setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.anchor = GridBagConstraints.WEST;
-
-        // Matrícula
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.weightx = 0;
-        gbc.fill = GridBagConstraints.NONE;
-        add(new JLabel("Matrícula:"), gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
+        gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        Font fieldFont = new Font("SansSerif", Font.PLAIN, 14);
+
+        // Matrícula
+        add(new JLabel("Matrícula:"), gbc);
+        gbc.gridy++;
         matriculaField = new JTextField();
+        matriculaField.setFont(fieldFont);
+        matriculaField.setPreferredSize(new Dimension(300, 30));
+        matriculaField.setBackground(Color.WHITE);
+        matriculaField.setBorder(BorderFactory.createLineBorder(new Color(200, 180, 230)));
         add(matriculaField, gbc);
 
         // Fecha
-        gbc.gridx = 0;
         gbc.gridy++;
-        gbc.weightx = 0;
-        gbc.fill = GridBagConstraints.NONE;
         add(new JLabel("Fecha (AAAA-MM-DD):"), gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridy++;
         fechaField = new JTextField(LocalDate.now().toString());
+        fechaField.setFont(fieldFont);
+        fechaField.setPreferredSize(new Dimension(300, 30));
+        fechaField.setBackground(Color.WHITE);
+        fechaField.setBorder(BorderFactory.createLineBorder(new Color(200, 180, 230)));
         add(fechaField, gbc);
 
         // Recomendación
-        gbc.gridx = 0;
         gbc.gridy++;
-        gbc.anchor = GridBagConstraints.NORTHWEST;
-        gbc.fill = GridBagConstraints.NONE;
         add(new JLabel("Recomendación:"), gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridy++;
         contenidoArea = new JTextArea(5, 20);
+        contenidoArea.setFont(fieldFont);
         contenidoArea.setLineWrap(true);
         contenidoArea.setWrapStyleWord(true);
+        contenidoArea.setBackground(Color.WHITE);
+        contenidoArea.setBorder(BorderFactory.createLineBorder(new Color(200, 180, 230)));
         JScrollPane scroll = new JScrollPane(contenidoArea);
+        scroll.setPreferredSize(new Dimension(300, 100));
         add(scroll, gbc);
 
         // Botón Guardar
-        gbc.gridx = 1;
         gbc.gridy++;
-        gbc.weightx = 1.0; 
-        gbc.weighty = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL; 
-        gbc.anchor = GridBagConstraints.EAST;
         guardarButton = new JButton("Guardar");
+        guardarButton.setFont(new Font("SansSerif", Font.BOLD, 14));
+        guardarButton.setBackground(new Color(230, 220, 250));
+        guardarButton.setFocusPainted(false);
+        guardarButton.setBorder(BorderFactory.createLineBorder(new Color(200, 180, 230)));
+        guardarButton.setPreferredSize(new Dimension(140, 35));
         add(guardarButton, gbc);
 
         guardarButton.addActionListener(e -> guardarRecomendacion());
@@ -86,7 +84,7 @@ public class RecomendacionMedicaForm extends JPanel {
         matriculaField.setText(r.getMatricula());
         fechaField.setText(r.getFecha().toString());
         contenidoArea.setText(r.getTexto());
-        guardarButton.setText("Actualizar");
+        guardarButton.setText("✏️ Actualizar");
     }
 
     public boolean guardarRecomendacion() {
@@ -95,9 +93,6 @@ public class RecomendacionMedicaForm extends JPanel {
             LocalDate fecha = LocalDate.parse(fechaField.getText().trim());
             String texto = contenidoArea.getText().trim();
 
-            if (matricula.isEmpty()) {
-                throw new IllegalArgumentException("La matrícula no puede estar vacía.");
-            }
             if (texto.isEmpty()) {
                 throw new IllegalArgumentException("La recomendación no puede estar vacía.");
             }
@@ -114,7 +109,6 @@ public class RecomendacionMedicaForm extends JPanel {
                 JOptionPane.showMessageDialog(this, "✅ Recomendación guardada correctamente.");
             }
 
-            limpiar();
             return true;
 
         } catch (DateTimeParseException ex) {

@@ -17,33 +17,86 @@ public class FormConsultaMedica extends JPanel {
 
     public FormConsultaMedica() {
         consultaDAO = new ConsultaMedicaDAO();
-        setLayout(new GridLayout(7, 2, 5, 5));
 
-        txtMatricula = new JTextField();
-        txtMotivo = new JTextField();
-        txtSignosVitales = new JTextField();
-        txtMedicamentos = new JTextField();
-        txtObservaciones = new JTextField();
-        txtFecha = new JTextField(); // formato: yyyy-MM-dd
+        Color fondoLila = new Color(245, 240, 255);
+        setBackground(fondoLila);
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        add(new JLabel("Matrícula del estudiante:")); add(txtMatricula);
-        add(new JLabel("Motivo:")); add(txtMotivo);
-        add(new JLabel("Signos Vitales:")); add(txtSignosVitales);
-        add(new JLabel("Medicamentos:")); add(txtMedicamentos);
-        add(new JLabel("Observaciones:")); add(txtObservaciones);
-        add(new JLabel("Fecha (yyyy-MM-dd):")); add(txtFecha);
+        txtMatricula = crearCampoTexto();
+        txtMotivo = crearCampoTexto();
+        txtSignosVitales = crearCampoTexto();
+        txtMedicamentos = crearCampoTexto();
+        txtObservaciones = crearCampoTexto();
+        txtFecha = crearCampoTexto("2025-08-06");
 
-        btnGuardar = new JButton("Guardar Consulta");
-        add(new JLabel()); add(btnGuardar);
+        add(Box.createVerticalStrut(10));
+        add(crearGrupoCampo("Matrícula del estudiante", txtMatricula));
+        add(Box.createVerticalStrut(10));
+        add(crearGrupoCampo("Motivo", txtMotivo));
+        add(Box.createVerticalStrut(10));
+        add(crearGrupoCampo("Signos Vitales", txtSignosVitales));
+        add(Box.createVerticalStrut(10));
+        add(crearGrupoCampo("Medicamentos", txtMedicamentos));
+        add(Box.createVerticalStrut(10));
+        add(crearGrupoCampo("Observaciones", txtObservaciones));
+        add(Box.createVerticalStrut(10));
+        add(crearGrupoCampo("Fecha (AAAA-MM-DD)", txtFecha));
+        add(Box.createVerticalStrut(20));
 
+        btnGuardar = new JButton("Guardar");
+        btnGuardar.setFont(new Font("SansSerif", Font.BOLD, 16));
+        btnGuardar.setBackground(new Color(230, 225, 250));
+        btnGuardar.setFocusPainted(false);
+        btnGuardar.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnGuardar.setMaximumSize(new Dimension(160, 40));
         btnGuardar.addActionListener(e -> guardarOActualizar());
+
+        add(btnGuardar);
+        add(Box.createVerticalGlue());
+    }
+
+    private JPanel crearGrupoCampo(String etiqueta, Component campo) {
+        JPanel grupo = new JPanel();
+        grupo.setLayout(new BoxLayout(grupo, BoxLayout.Y_AXIS));
+        grupo.setBackground(new Color(245, 240, 255));
+
+        JLabel label = new JLabel(etiqueta);
+        label.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        campo.setMaximumSize(new Dimension(600, 40));
+        campo.setPreferredSize(new Dimension(600, 40));
+
+        grupo.add(label);
+        grupo.add(Box.createVerticalStrut(6));
+        grupo.add(campo);
+        grupo.setBorder(BorderFactory.createEmptyBorder(0, 40, 0, 40));
+
+        return grupo;
+    }
+
+    private JTextField crearCampoTexto() {
+        return crearCampoTexto("");
+    }
+
+    private JTextField crearCampoTexto(String textoInicial) {
+        JTextField campo = new JTextField(textoInicial);
+        campo.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        campo.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        campo.setBackground(Color.WHITE);
+        campo.setMargin(new Insets(8, 8, 8, 8));
+        return campo;
     }
 
     public void setTabla(TableConsultaMedica tabla) {
         this.tablaRef = tabla;
     }
 
-    private void guardarOActualizar() {
+    public JButton getBtnGuardar() {
+        return btnGuardar;
+    }
+
+    public void guardarOActualizar() {
         try {
             ConsultaMedica consulta = obtenerConsulta();
             if (idActual != null) consulta.setId(idActual);
@@ -84,13 +137,9 @@ public class FormConsultaMedica extends JPanel {
         txtSignosVitales.setText("");
         txtMedicamentos.setText("");
         txtObservaciones.setText("");
-        txtFecha.setText("");
+        txtFecha.setText("2025-08-06");
         idActual = null;
-        btnGuardar.setText("Guardar Consulta");
-    }
-
-    public JButton getBtnGuardar() {
-        return btnGuardar;
+        btnGuardar.setText("Guardar");
     }
 
     public ConsultaMedica obtenerConsulta() throws DateTimeParseException {
@@ -112,6 +161,6 @@ public class FormConsultaMedica extends JPanel {
         txtMedicamentos.setText(c.getMedicamentos());
         txtObservaciones.setText(c.getObservaciones());
         txtFecha.setText(c.getFecha().toString());
-        btnGuardar.setText("Actualizar Consulta");
+        btnGuardar.setText("Actualizar");
     }
 }

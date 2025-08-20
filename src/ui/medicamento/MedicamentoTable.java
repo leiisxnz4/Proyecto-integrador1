@@ -15,26 +15,41 @@ public class MedicamentoTable extends JPanel {
 
     public MedicamentoTable() {
         setLayout(new BorderLayout());
-        setBorder(BorderFactory.createTitledBorder("Medicamentos Registrados"));
+        setBackground(new Color(245, 240, 255)); // Fondo lila claro
+
+        JPanel contenedorTabla = new JPanel(new BorderLayout());
+        contenedorTabla.setBackground(new Color(250, 245, 255)); // Panel rosita
+        contenedorTabla.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JLabel titulo = new JLabel("📋 Medicamentos Registrados");
+        titulo.setFont(new Font("SansSerif", Font.BOLD, 18));
+        titulo.setForeground(new Color(100, 80, 120));
+        titulo.setHorizontalAlignment(SwingConstants.CENTER);
+        contenedorTabla.add(titulo, BorderLayout.NORTH);
 
         String[] columnas = {"ID", "Nombre", "Presentación", "Dosis", "Cantidad", "Acciones"};
         modelo = new DefaultTableModel(columnas, 0) {
             public boolean isCellEditable(int row, int column) {
-                return column == 5; // Solo la columna de acciones
+                return column == 5;
             }
         };
 
         tabla = new JTable(modelo);
-        tabla.setRowHeight(30);
+        tabla.setRowHeight(32);
+        tabla.setFont(new Font("SansSerif", Font.PLAIN, 14));
         tabla.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
-        tabla.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        tabla.getTableHeader().setBackground(new Color(230, 220, 250));
         tabla.setSelectionBackground(new Color(220, 240, 255));
+        tabla.setGridColor(new Color(230, 230, 250));
 
         tabla.getColumn("Acciones").setCellRenderer(new ButtonRenderer());
         tabla.getColumn("Acciones").setCellEditor(new ButtonEditor(new JCheckBox(), this));
 
         JScrollPane scroll = new JScrollPane(tabla);
-        add(scroll, BorderLayout.CENTER);
+        scroll.setBorder(BorderFactory.createLineBorder(new Color(220, 200, 240), 1));
+        contenedorTabla.add(scroll, BorderLayout.CENTER);
+
+        add(contenedorTabla, BorderLayout.CENTER);
 
         cargarDatos();
     }

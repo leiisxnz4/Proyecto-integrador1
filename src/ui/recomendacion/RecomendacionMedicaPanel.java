@@ -1,11 +1,11 @@
-package ui.cita;
+package ui.recomendacion;
 
 import java.awt.*;
 import javax.swing.*;
 
-public class CitaMedicaPanel extends JPanel {
+public class RecomendacionMedicaPanel extends JPanel {
 
-    public CitaMedicaPanel() {
+    public RecomendacionMedicaPanel() {
         // 🎨 Colores personalizados
         Color fondoLila = new Color(245, 240, 255);       // Fondo general
         Color panelSuave = new Color(250, 245, 255);      // Panel flotante
@@ -22,33 +22,21 @@ public class CitaMedicaPanel extends JPanel {
         btnRegresar.setFocusPainted(false);
         btnRegresar.setBackground(new Color(230, 225, 250));
         btnRegresar.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+
+        // ✅ Acción corregida para cerrar la ventana flotante
         btnRegresar.addActionListener(e -> {
-            Window ventana = SwingUtilities.getWindowAncestor(this);
+            Window ventana = SwingUtilities.getWindowAncestor(RecomendacionMedicaPanel.this);
             if (ventana instanceof JFrame frame) {
-                frame.dispose();
+                frame.dispose(); // ✅ Cierra la ventana flotante
             }
         });
+
         panelSuperior.add(btnRegresar, BorderLayout.WEST);
 
-        // 🧩 Crear tabla y formulario principal
-        CitaMedicaTable tabla = new CitaMedicaTable(null);
-        CitaMedicaForm formulario = new CitaMedicaForm(null, tabla);
-        tabla.setFormulario(formulario); // ✅ Conexión para botón ✏️
-        formulario.getGuardarButton().addActionListener(e -> tabla.cargarDatos());
-
-        // 🎯 Fondo central con título y formulario flotante
-        JPanel fondoCentral = new JPanel(new GridBagLayout());
-        fondoCentral.setBackground(fondoLila);
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.NORTH;
-
         // 🏷️ Título centrado
-        JLabel titulo = new JLabel("Gestión de Citas Médicas");
+        JLabel titulo = new JLabel("Gestión de Recomendaciones Médicas", SwingConstants.CENTER);
         titulo.setFont(new Font("SansSerif", Font.BOLD, 24));
-        titulo.setHorizontalAlignment(SwingConstants.CENTER);
+        titulo.setForeground(new Color(80, 60, 120));
 
         JPanel panelTitulo = new JPanel(new BorderLayout());
         panelTitulo.setBackground(fondoLila);
@@ -56,22 +44,15 @@ public class CitaMedicaPanel extends JPanel {
         panelTitulo.setPreferredSize(new Dimension(800, 60));
         panelTitulo.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
 
-        gbc.gridy = 0;
-        gbc.insets = new Insets(0, 20, 0, 20);
-        fondoCentral.add(panelTitulo, gbc);
-
-        // 🧩 Formulario flotante centrado
+        // 🧩 Formulario flotante
+        RecomendacionMedicaForm formulario = new RecomendacionMedicaForm();
         JPanel panelFlotante = new JPanel(new BorderLayout());
         panelFlotante.setPreferredSize(new Dimension(800, 460));
         panelFlotante.setBackground(panelSuave);
         panelFlotante.setBorder(BorderFactory.createEmptyBorder(40, 50, 40, 50));
         panelFlotante.add(formulario, BorderLayout.CENTER);
 
-        gbc.gridy = 1;
-        gbc.insets = new Insets(10, 20, 10, 20);
-        fondoCentral.add(panelFlotante, gbc);
-
-        // 📋 Botón para ver registros en ventana emergente
+        // 📋 Botón para ver registros
         JButton btnVerRegistros = new JButton("📋 Ver registros");
         btnVerRegistros.setFont(new Font("SansSerif", Font.PLAIN, 14));
         btnVerRegistros.setFocusPainted(false);
@@ -79,15 +60,13 @@ public class CitaMedicaPanel extends JPanel {
         btnVerRegistros.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
 
         btnVerRegistros.addActionListener(e -> {
-            JFrame ventanaRegistros = new JFrame("Registros de Citas");
+            JFrame ventanaRegistros = new JFrame("Registros de Recomendaciones");
             ventanaRegistros.setSize(900, 600);
             ventanaRegistros.setLocationRelativeTo(null);
+            ventanaRegistros.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-            // 🧩 Crear tabla y conectar con el mismo formulario
-            CitaMedicaTable tablaConDiseño = new CitaMedicaTable(ventanaRegistros);
-            tablaConDiseño.setFormulario(formulario); // ✅ Reutiliza el mismo formulario
-
-            ventanaRegistros.setContentPane(tablaConDiseño);
+            RecomendacionMedicaTable tabla = new RecomendacionMedicaTable(formulario);
+            ventanaRegistros.setContentPane(tabla);
             ventanaRegistros.setVisible(true);
         });
 
@@ -96,9 +75,16 @@ public class CitaMedicaPanel extends JPanel {
         panelBoton.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
         panelBoton.add(btnVerRegistros);
 
-        // 🧩 Ensamblar todo
+        // 🧩 Ensamblado vertical
+        JPanel centro = new JPanel();
+        centro.setLayout(new BoxLayout(centro, BoxLayout.Y_AXIS));
+        centro.setBackground(fondoLila);
+        centro.add(panelTitulo);
+        centro.add(panelFlotante);
+        centro.add(Box.createVerticalStrut(20));
+        centro.add(panelBoton);
+
         add(panelSuperior, BorderLayout.NORTH);
-        add(fondoCentral, BorderLayout.CENTER);
-        add(panelBoton, BorderLayout.SOUTH);
+        add(centro, BorderLayout.CENTER);
     }
 }

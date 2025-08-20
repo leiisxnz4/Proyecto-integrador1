@@ -3,6 +3,7 @@ package ui.cita;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
+import models.CitaMedica;
 
 public class ButtonEditor extends AbstractCellEditor implements TableCellEditor {
     private final JPanel panel;
@@ -43,11 +44,32 @@ public class ButtonEditor extends AbstractCellEditor implements TableCellEditor 
     }
 
     private void editarCita() {
-        fireEditingStopped(); // Detener edición para evitar conflictos
+        fireEditingStopped();
 
-        var cita = tablePanel.obtenerCitaEnFila(filaActual);
-        if (cita != null && tablePanel.getFormulario() != null) {
-            tablePanel.getFormulario().cargarCitaParaEdicion(cita);
+        CitaMedica cita = tablePanel.obtenerCitaEnFila(filaActual);
+        if (cita != null) {
+            JFrame ventanaEdicion = new JFrame("Editar Cita");
+            ventanaEdicion.setSize(600, 400);
+            ventanaEdicion.setLocationRelativeTo(tabla);
+
+            // 🎨 Fondo visual coherente
+            Color fondoLila = new Color(245, 240, 255);
+            Color panelSuave = new Color(250, 245, 255);
+
+            CitaMedicaForm formulario = new CitaMedicaForm(ventanaEdicion, tablePanel);
+            formulario.cargarCitaParaEdicion(cita);
+
+            JPanel panelFlotante = new JPanel(new BorderLayout());
+            panelFlotante.setBackground(panelSuave);
+            panelFlotante.setBorder(BorderFactory.createEmptyBorder(40, 50, 40, 50));
+            panelFlotante.add(formulario, BorderLayout.CENTER);
+
+            JPanel fondo = new JPanel(new BorderLayout());
+            fondo.setBackground(fondoLila);
+            fondo.add(panelFlotante, BorderLayout.CENTER);
+
+            ventanaEdicion.setContentPane(fondo);
+            ventanaEdicion.setVisible(true);
         } else {
             JOptionPane.showMessageDialog(tabla, "❌ No se pudo cargar la cita para edición.");
         }

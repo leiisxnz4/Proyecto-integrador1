@@ -6,14 +6,21 @@ import javax.swing.*;
 import ui.cita.CitaMedicaPanel;
 import ui.consulta.PanelConsultaMedica;
 import ui.estudiante.PanelEstudiante;
+import ui.login.LoginWindow;
+import ui.login.RegistroUsuarioPanel;
 import ui.medicamento.MedicamentoPanel;
-import ui.recomendacion.PanelRecomendacionMedica;
+import ui.recomendacion.RecomendacionMedicaPanel;
 import ui.reporte.HistorialPanel;
 import util.VentanaModulo;
 
 public class App extends JFrame {
 
-    public App() {
+    private final String nombreUsuario;
+    private final String rolUsuario;
+
+    public App(String nombreUsuario, String rolUsuario) {
+        this.nombreUsuario = nombreUsuario;
+        this.rolUsuario = rolUsuario;
         initUI();
     }
 
@@ -35,8 +42,24 @@ public class App extends JFrame {
         JPanel barraInferior = new JPanel(new BorderLayout());
         barraInferior.setBackground(new Color(220, 210, 240));
         barraInferior.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        barraInferior.add(new JLabel("Usuario: Enfermera"), BorderLayout.WEST);
-        barraInferior.add(new JLabel(LocalDate.now().toString()), BorderLayout.EAST);
+
+        JLabel usuarioLabel = new JLabel("Usuario: " + nombreUsuario + " (" + rolUsuario + ")");
+        JLabel fechaLabel = new JLabel(LocalDate.now().toString());
+
+        JButton btnSalir = new JButton("Salir del sistema");
+        btnSalir.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        btnSalir.setBackground(new Color(230, 220, 250));
+        btnSalir.setFocusPainted(false);
+        btnSalir.setBorder(BorderFactory.createEmptyBorder(4, 12, 4, 12));
+        btnSalir.addActionListener(e -> {
+            dispose();
+            new LoginWindow().setVisible(true);
+        });
+
+        barraInferior.add(usuarioLabel, BorderLayout.WEST);
+        barraInferior.add(fechaLabel, BorderLayout.EAST);
+        barraInferior.add(btnSalir, BorderLayout.CENTER);
+
         mainPanel.add(barraInferior, BorderLayout.SOUTH);
     }
 
@@ -55,9 +78,15 @@ public class App extends JFrame {
         panel.add(crearBoton("Citas", "Icons/citas.png", new CitaMedicaPanel()));
         panel.add(crearBoton("Consulta", "Icons/consulta.png", new PanelConsultaMedica()));
         panel.add(crearBoton("Medicamentos", "Icons/medicamentos.png", new MedicamentoPanel()));
-        panel.add(crearBoton("Recomendaciones", "Icons/recomendaciones.png", new PanelRecomendacionMedica()));
+        panel.add(crearBoton("Recomendaciones", "Icons/recomendaciones.png", new RecomendacionMedicaPanel()));
         panel.add(crearBoton("Historial", "Icons/historial.png", new HistorialPanel()));
         panel.add(crearBoton("Estudiantes", "Icons/estudiantes.png", new PanelEstudiante()));
+
+        // Solo mostrar si el usuario es admin
+        if (rolUsuario.equalsIgnoreCase("admin")) {
+            JButton btnRegistrar = crearBoton("Registrar Usuario", "Icons/registro.png", new RegistroUsuarioPanel());
+            panel.add(btnRegistrar);
+        }
 
         return panel;
     }
@@ -72,7 +101,6 @@ public class App extends JFrame {
         boton.setBackground(Color.WHITE);
         boton.setBorder(BorderFactory.createEmptyBorder());
 
-        // Hover visual
         boton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 boton.setBackground(new Color(230, 230, 250));
@@ -82,13 +110,8 @@ public class App extends JFrame {
             }
         });
 
-        // Abrir ventana
         boton.addActionListener(e -> new VentanaModulo(texto, panelContenido));
 
         return boton;
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new App().setVisible(true));
     }
 }

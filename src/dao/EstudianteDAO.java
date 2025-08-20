@@ -63,10 +63,11 @@ public class EstudianteDAO {
         return lista;
     }
 
-    public boolean actualizar(Estudiante e) throws SQLException {
+    public boolean actualizar(Estudiante e) {
         String sql = "UPDATE estudiantes SET nombre = ?, edad = ?, grupo = ?, tutor = ?, telefono = ?, matricula = ?, condiciones_medicas = ? WHERE id = ?";
         try (Connection con = ConexionDB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
+
             ps.setString(1, e.getNombre());
             ps.setInt(2, e.getEdad());
             ps.setString(3, e.getGrupo());
@@ -78,6 +79,9 @@ public class EstudianteDAO {
 
             int filas = ps.executeUpdate();
             return filas > 0;
+        } catch (SQLException ex) {
+            System.err.println("❌ Error al actualizar estudiante: " + ex.getMessage());
+            return false;
         }
     }
 

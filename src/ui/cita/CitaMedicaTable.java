@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import models.CitaMedica;
 
 public class CitaMedicaTable extends JPanel {
@@ -17,10 +18,40 @@ public class CitaMedicaTable extends JPanel {
     private final DateTimeFormatter fechaFmt = DateTimeFormatter.ofPattern("dd MMM yyyy");
     private final DateTimeFormatter horaFmt = DateTimeFormatter.ofPattern("hh:mm a");
 
-    public CitaMedicaTable() {
-        setLayout(new BorderLayout());
-        setBorder(BorderFactory.createTitledBorder("Citas Médicas Agendadas"));
+    public CitaMedicaTable(JFrame ventanaActual) {
+        // 🎨 Colores personalizados
+        Color fondoLila = new Color(245, 240, 255);
+        Color panelSuave = new Color(250, 245, 255);
+        Color bordeLila = new Color(200, 180, 230);
+        Color encabezadoLila = new Color(230, 220, 250);
 
+        setLayout(new BorderLayout());
+        setBackground(fondoLila);
+
+        // 🔝 Panel superior con botón regresar y título
+        JPanel panelSuperior = new JPanel(new BorderLayout());
+        panelSuperior.setBackground(fondoLila);
+        panelSuperior.setBorder(BorderFactory.createEmptyBorder(30, 40, 0, 40));
+
+        JButton btnRegresar = new JButton("← Regresar");
+        btnRegresar.setFocusPainted(false);
+        btnRegresar.setBackground(encabezadoLila);
+        btnRegresar.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
+        btnRegresar.addActionListener(e -> {
+            if (ventanaActual != null) {
+                ventanaActual.dispose();
+            }
+        });
+        panelSuperior.add(btnRegresar, BorderLayout.WEST);
+
+        JLabel titulo = new JLabel("Registros de Citas");
+        titulo.setFont(new Font("SansSerif", Font.BOLD, 24));
+        titulo.setHorizontalAlignment(SwingConstants.CENTER);
+        titulo.setForeground(new Color(80, 60, 120));
+        titulo.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+        panelSuperior.add(titulo, BorderLayout.CENTER);
+
+        // 🧩 Tabla y modelo
         String[] columnas = {"ID", "Matrícula", "Nombre", "Fecha", "Hora", "Motivo", "Acciones"};
         modelo = new DefaultTableModel(columnas, 0) {
             @Override
@@ -32,8 +63,16 @@ public class CitaMedicaTable extends JPanel {
         tabla = new JTable(modelo);
         tabla.setRowHeight(30);
         tabla.setFont(new Font("SansSerif", Font.PLAIN, 13));
-        tabla.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
-        tabla.setSelectionBackground(new Color(220, 240, 255));
+        tabla.setBackground(Color.WHITE);
+        tabla.setGridColor(bordeLila);
+        tabla.setSelectionBackground(encabezadoLila);
+        tabla.setSelectionForeground(Color.BLACK);
+
+        JTableHeader header = tabla.getTableHeader();
+        header.setFont(new Font("SansSerif", Font.BOLD, 14));
+        header.setBackground(encabezadoLila);
+        header.setForeground(new Color(80, 60, 120));
+        header.setBorder(BorderFactory.createLineBorder(bordeLila));
 
         tabla.getColumnModel().getColumn(0).setPreferredWidth(40);
         tabla.getColumnModel().getColumn(1).setPreferredWidth(90);
@@ -47,7 +86,29 @@ public class CitaMedicaTable extends JPanel {
         tabla.getColumn("Acciones").setCellEditor(new ButtonEditor(tabla, this));
 
         JScrollPane scroll = new JScrollPane(tabla);
-        add(scroll, BorderLayout.CENTER);
+        scroll.setBorder(BorderFactory.createLineBorder(bordeLila));
+        scroll.getViewport().setBackground(fondoLila);
+
+        // 🧼 Panel flotante
+        JPanel fondoCentral = new JPanel(new GridBagLayout());
+        fondoCentral.setBackground(fondoLila);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(10, 20, 10, 20);
+
+        JPanel panelFlotante = new JPanel(new BorderLayout());
+        panelFlotante.setPreferredSize(new Dimension(800, 400));
+        panelFlotante.setBackground(panelSuave);
+        panelFlotante.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
+        panelFlotante.add(scroll, BorderLayout.CENTER);
+
+        fondoCentral.add(panelFlotante, gbc);
+
+        // 🧩 Ensamblar todo
+        add(panelSuperior, BorderLayout.NORTH);
+        add(fondoCentral, BorderLayout.CENTER);
 
         cargarDatos();
     }

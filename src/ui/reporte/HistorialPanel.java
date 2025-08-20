@@ -11,36 +11,58 @@ public class HistorialPanel extends JPanel {
     private final HistorialTable table;
 
     public HistorialPanel() {
-        setLayout(new BorderLayout(20, 20));
-        setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
+        // 🎨 Colores personalizados
+        Color fondoLila = new Color(245, 240, 255);       // Fondo general
+        Color panelSuave = new Color(250, 245, 255);      // Panel flotante
+        Color botonColor = new Color(230, 225, 250);
+        Color bordeSuave = new Color(200, 180, 230);
 
+        setLayout(new BorderLayout());
+        setBackground(fondoLila);
+        setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
+
+        // 🔝 Panel superior con botón volver y título
         JPanel topPanel = new JPanel(new BorderLayout());
-        JLabel titulo = new JLabel("Historial Clínico", SwingConstants.CENTER);
-        titulo.setFont(new Font("Arial", Font.BOLD, 24));
+        topPanel.setBackground(fondoLila);
+        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         JButton btnVolver = new JButton("← Volver");
+        btnVolver.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        btnVolver.setBackground(botonColor);
+        btnVolver.setFocusPainted(false);
+        btnVolver.setBorder(BorderFactory.createLineBorder(bordeSuave));
+        btnVolver.setPreferredSize(new Dimension(120, 35));
         btnVolver.addActionListener(e -> {
             Window ventana = SwingUtilities.getWindowAncestor(this);
             if (ventana instanceof JFrame frame) {
-                frame.dispose(); // Cierra la ventana actual
+                frame.dispose(); // ✅ Cierra la ventana flotante
             }
         });
+
+        JLabel titulo = new JLabel("Historial Clínico", SwingConstants.CENTER);
+        titulo.setFont(new Font("SansSerif", Font.BOLD, 24));
+        titulo.setForeground(new Color(80, 60, 120));
 
         topPanel.add(btnVolver, BorderLayout.WEST);
         topPanel.add(titulo, BorderLayout.CENTER);
         add(topPanel, BorderLayout.NORTH);
 
-        // Formulario y tabla
-        form = new HistorialForm(); // Usa matrícula
-        table = new HistorialTable(); // Muestra íconos y datos
+        // 🧩 Panel de contenido con formulario y tabla
+        form = new HistorialForm();
+        table = new HistorialTable();
 
-        JPanel contenido = new JPanel(new BorderLayout(10, 10));
+        JPanel contenido = new JPanel(new BorderLayout(20, 20));
+        contenido.setBackground(panelSuave);
+        contenido.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(220, 200, 240), 1),
+            BorderFactory.createEmptyBorder(30, 30, 30, 30)
+        ));
         contenido.add(form, BorderLayout.NORTH);
         contenido.add(table, BorderLayout.CENTER);
 
         add(contenido, BorderLayout.CENTER);
 
-        // Acción del botón buscar
+        // 🎯 Acción del botón buscar
         form.getBuscarBtn().addActionListener(e -> buscarHistorial());
     }
 

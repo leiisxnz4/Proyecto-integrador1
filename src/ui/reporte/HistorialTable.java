@@ -11,7 +11,13 @@ public class HistorialTable extends JPanel {
     private final JTable tabla;
 
     public HistorialTable() {
+        // 🎨 Colores suaves
+        Color fondoRosita = new Color(250, 245, 255);
+        Color bordeLila = new Color(200, 180, 230);
+        Color encabezadoLila = new Color(230, 220, 250);
+
         setLayout(new BorderLayout());
+        setBackground(fondoRosita);
 
         String[] columnas = {"Tipo", "Fecha", "Detalle"};
         modelo = new DefaultTableModel(columnas, 0) {
@@ -25,9 +31,20 @@ public class HistorialTable extends JPanel {
         tabla.setFillsViewportHeight(true);
         tabla.setRowHeight(28);
         tabla.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        tabla.setBackground(Color.WHITE);
+        tabla.setGridColor(bordeLila);
+        tabla.setSelectionBackground(encabezadoLila);
+        tabla.setSelectionForeground(Color.BLACK);
         tabla.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
+        tabla.getTableHeader().setBackground(encabezadoLila);
+        tabla.getTableHeader().setForeground(new Color(80, 60, 120));
+        tabla.getTableHeader().setBorder(BorderFactory.createLineBorder(bordeLila));
 
-        add(new JScrollPane(tabla), BorderLayout.CENTER);
+        JScrollPane scroll = new JScrollPane(tabla);
+        scroll.setBorder(BorderFactory.createLineBorder(bordeLila));
+        scroll.getViewport().setBackground(fondoRosita);
+
+        add(scroll, BorderLayout.CENTER);
     }
 
     public void actualizarTabla(List<HistorialClinico> historial) {

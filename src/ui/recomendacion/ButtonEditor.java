@@ -1,12 +1,11 @@
 package ui.recomendacion;
 
 import dao.RecomendacionMedicaDAO;
-import models.RecomendacionMedica;
-
-import javax.swing.*;
-import javax.swing.table.TableCellEditor;
 import java.awt.*;
 import java.time.LocalDate;
+import javax.swing.*;
+import javax.swing.table.TableCellEditor;
+import models.RecomendacionMedica;
 
 public class ButtonEditor extends AbstractCellEditor implements TableCellEditor {
     private final JPanel panel;
@@ -18,14 +17,25 @@ public class ButtonEditor extends AbstractCellEditor implements TableCellEditor 
     public ButtonEditor(JTable tabla) {
         this.tabla = tabla;
         panel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
-        editar = new JButton("✏️");
-        eliminar = new JButton("🗑️");
+        panel.setBackground(new Color(250, 245, 255));
+
+        editar = crearBoton("✏️");
+        eliminar = crearBoton("🗑️");
 
         editar.addActionListener(e -> editarFila());
         eliminar.addActionListener(e -> eliminarFila());
 
         panel.add(editar);
         panel.add(eliminar);
+    }
+
+    private JButton crearBoton(String texto) {
+        JButton btn = new JButton(texto);
+        btn.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        btn.setBackground(new Color(230, 220, 250));
+        btn.setFocusPainted(false);
+        btn.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        return btn;
     }
 
     @Override
@@ -47,26 +57,46 @@ public class ButtonEditor extends AbstractCellEditor implements TableCellEditor 
             String fechaStr = tabla.getValueAt(filaActual, 2).toString();
             String texto = (String) tabla.getValueAt(filaActual, 3);
 
-            String nuevoTexto = JOptionPane.showInputDialog(
-                tabla,
-                "Editar recomendación:",
-                texto
-            );
+            LocalDate fecha = LocalDate.parse(fechaStr);
+            RecomendacionMedica r = new RecomendacionMedica(id, matricula, fecha, texto);
 
-            if (nuevoTexto != null && !nuevoTexto.trim().isEmpty()) {
-                LocalDate fecha = LocalDate.parse(fechaStr);
-                RecomendacionMedica r = new RecomendacionMedica(id, matricula, fecha, nuevoTexto.trim());
-                new RecomendacionMedicaDAO().actualizar(r);
+            RecomendacionMedicaForm formEdicion = new RecomendacionMedicaForm();
+            formEdicion.cargarRecomendacion(r);
 
-                // Recargar tabla
-                Component contenedor = SwingUtilities.getAncestorOfClass(RecomendacionMedicaTable.class, tabla);
-                if (contenedor instanceof RecomendacionMedicaTable tablePanel) {
-                    tablePanel.cargarDatos();
+            // ✅ Ajustar ancho de campos
+            formEdicion.getMatriculaField().setPreferredSize(new Dimension(450, 30));
+            formEdicion.getGuardarButton().setPreferredSize(new Dimension(160, 35));
+
+            JFrame ventana = new JFrame("✏️ Editar Recomendación");
+            ventana.setSize(650, 420);
+            ventana.setLocationRelativeTo(null);
+            ventana.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            ventana.setResizable(false); // ✅ Bloquea expansión
+
+            JPanel panelFlotante = new JPanel(new BorderLayout());
+            panelFlotante.setBackground(new Color(250, 245, 255));
+            panelFlotante.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
+            panelFlotante.add(formEdicion, BorderLayout.CENTER);
+
+            ventana.setContentPane(panelFlotante);
+            ventana.setVisible(true);
+
+            formEdicion.getGuardarButton().addActionListener(ev -> {
+                boolean actualizado = formEdicion.guardarRecomendacion();
+                if (actualizado) {
+                    ventana.dispose();
+
+                    Component contenedor = SwingUtilities.getAncestorOfClass(RecomendacionMedicaTable.class, tabla);
+                    if (contenedor instanceof RecomendacionMedicaTable tablePanel) {
+                        tablePanel.cargarDatos();
+                    }
                 }
-            }
+            });
+
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(tabla, "❌ Error al editar: " + ex.getMessage());
         }
+
         stopCellEditing();
     }
 
@@ -83,7 +113,6 @@ public class ButtonEditor extends AbstractCellEditor implements TableCellEditor 
             if (confirm == JOptionPane.YES_OPTION) {
                 new RecomendacionMedicaDAO().eliminar(id);
 
-                // Recargar tabla
                 Component contenedor = SwingUtilities.getAncestorOfClass(RecomendacionMedicaTable.class, tabla);
                 if (contenedor instanceof RecomendacionMedicaTable tablePanel) {
                     tablePanel.cargarDatos();
@@ -92,6 +121,7 @@ public class ButtonEditor extends AbstractCellEditor implements TableCellEditor 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(tabla, "❌ Error al eliminar: " + ex.getMessage());
         }
+
         stopCellEditing();
     }
 }
